@@ -35,5 +35,3 @@ build/
 # Yuklangan rasmlar
 uploads/
 
-# Parollar bor fayl
-src/main/resources/application.yml

@@ -17,7 +17,6 @@ spring:
       multipart:
         max-file-size: 2MB
         max-request-size: 2MB
-
 app:
   jwt:
     secret: ReplaceThisWithLongSecretKeyAtLeast32Chars12345

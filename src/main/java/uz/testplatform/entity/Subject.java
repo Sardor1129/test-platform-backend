@@ -30,4 +30,7 @@ public class Subject {
 
     @Column(nullable = false)
     private Integer questionCount;
+
+    @Column(nullable = false, columnDefinition = "integer default 60")
+    private Integer passPercent;
 }

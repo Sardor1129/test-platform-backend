@@ -32,11 +32,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final VerificationCodeRepository codeRepository;
     private final PendingRegistrationStore pendingStore;
-    private final SmsService smsService;
+    private final MailService mailService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
+    // ---------- LOGIN ----------
 
     public AuthResponse login(LoginRequest request) {
         try {
@@ -45,74 +46,80 @@ public class AuthService {
         } catch (AuthenticationException e) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Login yoki parol noto'g'ri");
         }
+
         User user = userRepository.findByLogin(request.login())
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Login yoki parol noto'g'ri"));
 
         return toResponse(user);
     }
 
+    // ---------- RO'YXATDAN O'TISH ----------
 
     @Transactional
     public void sendRegisterCode(RegisterRequest request) {
+        String email = normalize(request.email());
+
         if (!request.password().equals(request.confirmPassword())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Parollar bir xil emas");
         }
         if (userRepository.existsByLogin(request.login())) {
             throw new ApiException(HttpStatus.CONFLICT, "Bu login band");
         }
-        if (userRepository.existsByEmail(request.email())) {
+        if (userRepository.existsByEmailIgnoreCase(email)) {
             throw new ApiException(HttpStatus.CONFLICT, "Bu email ro'yxatdan o'tgan");
         }
-        if (userRepository.existsByPhone(request.phone())) {
-            throw new ApiException(HttpStatus.CONFLICT, "Bu telefon raqam ro'yxatdan o'tgan");
-        }
-        pendingStore.put(request.phone(), request);
-        issueCode(request.phone(), CodePurpose.REGISTER);
+
+        pendingStore.put(email, request);
+        issueCode(email, CodePurpose.REGISTER);
     }
 
     @Transactional
-    public void resendRegisterCode(String phone) {
-        if (pendingStore.get(phone) == null) {
+    public void resendRegisterCode(String rawEmail) {
+        String email = normalize(rawEmail);
+        if (pendingStore.get(email) == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Avval ma'lumotlarni to'ldiring");
         }
-        issueCode(phone, CodePurpose.REGISTER);
+        issueCode(email, CodePurpose.REGISTER);
     }
 
     @Transactional(noRollbackFor = ApiException.class)
     public AuthResponse confirmRegister(VerifyCodeRequest request) {
-        RegisterRequest data = pendingStore.get(request.phone());
+        String email = normalize(request.email());
+
+        RegisterRequest data = pendingStore.get(email);
         if (data == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Avval ma'lumotlarni to'ldiring");
         }
 
-        verifyCode(request.phone(), CodePurpose.REGISTER, request.code());
+        verifyCode(email, CodePurpose.REGISTER, request.code());
 
         User user = User.builder()
                 .firstName(data.firstName())
-                .lastName(data.lastName())
-                .middleName(data.middleName())
-                .email(data.email())
-                .phone(data.phone())
+                .email(email)
                 .login(data.login())
                 .passwordHash(passwordEncoder.encode(data.password()))
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
 
-        pendingStore.remove(request.phone());
+        pendingStore.remove(email);
         return toResponse(user);
     }
 
+    // ---------- PAROL TIKLASH ----------
+
     @Transactional
-    public void sendResetCode(String phone) {
-        if (userRepository.existsByPhone(phone)) {
-            issueCode(phone, CodePurpose.RESET_PASSWORD);
+    public void sendResetCode(String rawEmail) {
+        String email = normalize(rawEmail);
+        // Email ro'yxatda bo'lmasa ham xato bermaymiz (kim ro'yxatdan o'tganini bildirmaslik uchun)
+        if (userRepository.existsByEmailIgnoreCase(email)) {
+            issueCode(email, CodePurpose.RESET_PASSWORD);
         }
     }
 
     @Transactional(noRollbackFor = ApiException.class)
     public void checkResetCode(VerifyCodeRequest request) {
-        checkCode(request.phone(), CodePurpose.RESET_PASSWORD, request.code());
+        checkCode(normalize(request.email()), CodePurpose.RESET_PASSWORD, request.code());
     }
 
     @Transactional(noRollbackFor = ApiException.class)
@@ -121,10 +128,10 @@ public class AuthService {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Parollar bir xil emas");
         }
 
-        VerificationCode saved = checkCode(
-                request.phone(), CodePurpose.RESET_PASSWORD, request.code());
+        String email = normalize(request.email());
+        VerificationCode saved = checkCode(email, CodePurpose.RESET_PASSWORD, request.code());
 
-        User user = userRepository.findByPhone(request.phone())
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Foydalanuvchi topilmadi"));
 
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
@@ -134,12 +141,27 @@ public class AuthService {
         codeRepository.save(saved);
     }
 
+    // ---------- YORDAMCHI METODLAR ----------
 
-    private void issueCode(String phone, CodePurpose purpose) {
+    private String normalize(String email) {
+        return email == null ? null : email.trim().toLowerCase();
+    }
+
+    private void issueCode(String email, CodePurpose purpose) {
+        // Bir emailga 1 daqiqada ko'pi bilan bitta kod
+        codeRepository.findFirstByEmailAndPurposeAndUsedFalseOrderByIdDesc(email, purpose)
+                .ifPresent(last -> {
+                    LocalDateTime sentAt = last.getExpiresAt().minusMinutes(CODE_LIFETIME_MINUTES);
+                    if (sentAt.isAfter(LocalDateTime.now().minusSeconds(60))) {
+                        throw new ApiException(HttpStatus.TOO_MANY_REQUESTS,
+                                "Kodni qayta yuborish uchun 1 daqiqa kuting");
+                    }
+                });
+
         String code = String.format("%06d", random.nextInt(1_000_000));
 
         VerificationCode entity = VerificationCode.builder()
-                .phone(phone)
+                .email(email)
                 .code(code)
                 .purpose(purpose)
                 .expiresAt(LocalDateTime.now().plusMinutes(CODE_LIFETIME_MINUTES))
@@ -147,12 +169,13 @@ public class AuthService {
                 .build();
         codeRepository.save(entity);
 
-        smsService.send(phone, "Tasdiqlash kodi: " + code);
+        mailService.sendCode(email, code);
     }
 
-    private VerificationCode checkCode(String phone, CodePurpose purpose, String code) {
+    // Kodni tekshiradi, lekin "ishlatilgan" deb belgilamaydi
+    private VerificationCode checkCode(String email, CodePurpose purpose, String code) {
         VerificationCode saved = codeRepository
-                .findFirstByPhoneAndPurposeAndUsedFalseOrderByIdDesc(phone, purpose)
+                .findFirstByEmailAndPurposeAndUsedFalseOrderByIdDesc(email, purpose)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Kod topilmadi, qayta yuboring"));
 
         if (saved.getExpiresAt().isBefore(LocalDateTime.now())) {
@@ -161,7 +184,7 @@ public class AuthService {
         if (!saved.getCode().equals(code)) {
             saved.setAttempts(saved.getAttempts() + 1);
             if (saved.getAttempts() >= MAX_ATTEMPTS) {
-                saved.setUsed(true);              // kod bekor qilinadi
+                saved.setUsed(true);                // kod bekor qilinadi
             }
             codeRepository.save(saved);
             throw new ApiException(HttpStatus.BAD_REQUEST,
@@ -170,14 +193,15 @@ public class AuthService {
         return saved;
     }
 
-    private void verifyCode(String phone, CodePurpose purpose, String code) {
-        VerificationCode saved = checkCode(phone, purpose, code);
+    // Kodni tekshiradi va ishlatilgan deb belgilaydi
+    private void verifyCode(String email, CodePurpose purpose, String code) {
+        VerificationCode saved = checkCode(email, purpose, code);
         saved.setUsed(true);
         codeRepository.save(saved);
     }
 
     private AuthResponse toResponse(User user) {
         String token = jwtService.generateToken(user.getLogin(), user.getRole().name());
-        return new AuthResponse(token, user.getRole().name(), user.getFirstName(), user.getLastName());
+        return new AuthResponse(token, user.getRole().name(), user.getFirstName());
     }
 }

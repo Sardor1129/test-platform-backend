@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public record AdminResultResponse(
         Long attemptId,
         String fullName,
-        String phone,
+        String email,
         String subjectName,
         String language,
         String attemptType,

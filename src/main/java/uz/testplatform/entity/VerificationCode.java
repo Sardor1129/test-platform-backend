@@ -19,7 +19,11 @@ public class VerificationCode {
     private Long id;
 
     @Column(nullable = false)
-    private String phone;
+    private String email;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    @Builder.Default
+    private int attempts = 0;
 
     @Column(nullable = false, length = 6)
     private String code;
@@ -34,6 +38,4 @@ public class VerificationCode {
     @Column(nullable = false)
     private boolean used;
 
-    @Column(nullable = false)
-    private int attempts;
 }

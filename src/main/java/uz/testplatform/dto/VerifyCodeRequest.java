@@ -1,9 +1,10 @@
 package uz.testplatform.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 public record VerifyCodeRequest(
-        @Pattern(regexp = "^\\+998\\d{9}$", message = "Telefon noto'g'ri") String phone,
+        @NotBlank(message = "Email kiritilmagan")
+        @Email(message = "Email noto'g'ri") String email,
         @NotBlank(message = "Kod kiritilmagan") String code
 ) {}

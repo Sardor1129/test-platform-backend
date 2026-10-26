@@ -32,21 +32,14 @@ public class ProfileService {
                 && userRepository.existsByLogin(request.login())) {
             throw new ApiException(HttpStatus.CONFLICT, "Bu login band");
         }
-        if (!user.getEmail().equals(request.email())
-                && userRepository.existsByEmail(request.email())) {
-            throw new ApiException(HttpStatus.CONFLICT, "Bu email band");
-        }
 
         user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user.setMiddleName(request.middleName());
-        user.setEmail(request.email());
         user.setLogin(request.login());
         userRepository.save(user);
 
         // Token ichida eski login bor, shuning uchun yangi token beramiz
         String token = jwtService.generateToken(user.getLogin(), user.getRole().name());
-        return new AuthResponse(token, user.getRole().name(), user.getFirstName(), user.getLastName());
+        return new AuthResponse(token, user.getRole().name(), user.getFirstName());
     }
 
     private User findUser(String login) {
@@ -55,7 +48,7 @@ public class ProfileService {
     }
 
     private ProfileResponse toResponse(User u) {
-        return new ProfileResponse(u.getId(), u.getFirstName(), u.getLastName(), u.getMiddleName(),
-                u.getEmail(), u.getPhone(), u.getLogin(), u.getAvatarUrl());
+        return new ProfileResponse(u.getId(), u.getFirstName(),
+                u.getEmail(), u.getLogin(), u.getAvatarUrl());
     }
 }

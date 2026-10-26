@@ -3,12 +3,8 @@ package uz.testplatform.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uz.testplatform.dto.*;
-import uz.testplatform.entity.CodePurpose;
 import uz.testplatform.service.AuthService;
 
 import java.util.Map;
@@ -21,19 +17,19 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest request){
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
 
     @PostMapping("/register/send-code")
-    public ResponseEntity<Map<String, String>> sendRegisterCode(@Valid @RequestBody RegisterRequest  request){
+    public ResponseEntity<Map<String, String>> sendRegisterCode(@Valid @RequestBody RegisterRequest request) {
         authService.sendRegisterCode(request);
-        return ResponseEntity.ok(Map.of("message","Kod yuborildi"));
+        return ResponseEntity.ok(Map.of("message", "Kod yuborildi"));
     }
 
     @PostMapping("/register/resend-code")
-    public ResponseEntity<Map<String, String>> resendRegisterCode(@Valid @RequestBody PhoneRequest request) {
-        authService.resendRegisterCode(request.phone());
+    public ResponseEntity<Map<String, String>> resendRegisterCode(@Valid @RequestBody EmailRequest request) {
+        authService.resendRegisterCode(request.email());
         return ResponseEntity.ok(Map.of("message", "Kod qayta yuborildi"));
     }
 
@@ -43,8 +39,8 @@ public class AuthController {
     }
 
     @PostMapping("/password/send-code")
-    public ResponseEntity<Map<String, String>> sendResetCode(@Valid @RequestBody PhoneRequest request) {
-        authService.sendResetCode(request.phone());
+    public ResponseEntity<Map<String, String>> sendResetCode(@Valid @RequestBody EmailRequest request) {
+        authService.sendResetCode(request.email());
         return ResponseEntity.ok(Map.of("message", "Kod yuborildi"));
     }
 

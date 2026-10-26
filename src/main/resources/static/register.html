@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="register">Ro'yxatdan o'tish</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body>
+<div class="auth-page">
+    <div class="auth-left">
+        <img src="img/auth-illustration.png" alt="">
+    </div>
+
+    <div class="auth-right">
+        <div class="auth-top">
+            <div class="lang-tabs" id="langTabs"></div>
+            <span data-i18n="haveAccount">Akkauntingiz bormi?</span>
+            <a href="index.html" class="btn btn-primary btn-small" data-i18n="signIn">Kirish</a>
+        </div>
+
+        <div class="auth-form-wrap">
+
+            <!-- 1-bosqich -->
+            <form class="auth-form wide" id="step1">
+                <h1 data-i18n="register">Ro'yxatdan o'tish</h1>
+
+                <div class="form-grid">
+                    <div class="col">
+                        <div class="field">
+                            <label for="firstName" data-i18n="firstName">Ism</label>
+                            <input type="text" id="firstName">
+                        </div>
+
+
+                    <div class="col">
+                        <div class="field">
+                            <label for="email" data-i18n="email">E-mail</label>
+                            <input type="email" id="email">
+                        </div>
+                        <div class="field">
+                            <label for="login" data-i18n="login">Login</label>
+                            <input type="text" id="login" autocomplete="username">
+                        </div>
+
+                        <div class="field">
+                            <label for="password" data-i18n="password">Parol</label>
+                            <div class="password-wrap">
+                                <input type="password" id="password" autocomplete="new-password">
+                                <button type="button" class="eye" data-target="password">
+                                    <svg class="icon-on" viewBox="0 0 24 24">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    <svg class="icon-off" viewBox="0 0 24 24">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <line x1="3" y1="3" x2="21" y2="21"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="field">
+                            <label for="confirmPassword" data-i18n="confirmPassword">Parolni takrorlang</label>
+                            <div class="password-wrap">
+                                <input type="password" id="confirmPassword" autocomplete="new-password">
+                                <button type="button" class="eye" data-target="confirmPassword">
+                                    <svg class="icon-on" viewBox="0 0 24 24">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    <svg class="icon-off" viewBox="0 0 24 24">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <line x1="3" y1="3" x2="21" y2="21"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-text" id="error1"></div>
+                <button type="submit" class="btn btn-primary btn-block" id="submit1" data-i18n="register">Ro'yxatdan o'tish</button>
+            </form>
+
+            <!-- 2-bosqich: kod -->
+            <form class="auth-form hidden" id="step2">
+                <h1 data-i18n="register">Ro'yxatdan o'tish</h1>
+                <p class="hint" id="phoneHint"></p>
+
+                <div class="field">
+                    <label for="code" data-i18n="codeLabel">Tasdiqlash kodi</label>
+                    <input type="text" id="code" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+                </div>
+
+                <div class="error-text" id="error2"></div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn btn-gray" id="resendBtn" disabled>Qayta yuborish</button>
+                    <button type="submit" class="btn btn-primary" id="submit2" data-i18n="register">Ro'yxatdan o'tish</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="viewAnswers">Javoblarni ko'rish</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body>
+<div class="test-page">
+
+    <div class="test-top">
+        <span class="lang-chip" id="subjectChip"></span>
+        <span class="timer" id="percentChip"></span>
+    </div>
+
+    <div class="error-text" id="error"></div>
+    <div class="q-nav" id="nav"></div>
+    <div id="questionBox"></div>
+
+    <div class="test-actions">
+        <button type="button" class="btn btn-outline" id="prevBtn" data-i18n="prev">‹ Oldingisi</button>
+        <button type="button" class="btn btn-primary" id="nextBtn" data-i18n="next">Keyingisi ›</button>
+    </div>
+
+    <div class="review-actions">
+        <a class="btn btn-outline" id="backLink" href="#" data-i18n="backToResult">Natijaga qaytish</a>
+        <a class="btn btn-outline" href="tests.html" data-i18n="backHome">Asosiy sahifaga qaytish</a>
+        <button type="button" class="btn btn-primary hidden" id="certBtn" data-i18n="downloadCert">Sertifikatni yuklab olish</button>
+    </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/review.js"></script>
+</body>
+</html>

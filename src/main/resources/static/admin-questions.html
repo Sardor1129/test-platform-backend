@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savollar</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="content">
+        <h1 class="page-title">Savollar</h1>
+
+        <div class="toolbar">
+            <div class="field">
+                <label for="subjectSelect">Fan</label>
+                <select id="subjectSelect"></select>
+            </div>
+            <div class="field">
+                <label for="langSelect">Til</label>
+                <select id="langSelect">
+                    <option value="uz">O'zbek</option>
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" id="newBtn">+ Savol qo'shish</button>
+        </div>
+
+        <div class="error-text" id="error"></div>
+        <div class="success-text" id="success"></div>
+
+        <form class="panel hidden" id="questionForm">
+            <h3 id="formTitle">Yangi savol</h3>
+
+            <div class="field">
+                <label for="text">Savol matni</label>
+                <textarea id="text"></textarea>
+            </div>
+
+            <div class="field">
+                <label for="imageUrl">Rasm manzili (ixtiyoriy)</label>
+                <input type="text" id="imageUrl">
+            </div>
+
+            <p class="hint" style="text-align:left;margin:0 0 10px;">
+                Variantlarni yozing va to'g'ri javobni belgilang
+            </p>
+            <div id="optionRows"></div>
+
+            <div class="error-text" id="formError"></div>
+
+            <div class="profile-actions">
+                <button type="submit" class="btn btn-primary" id="saveBtn">Saqlash</button>
+                <button type="button" class="btn btn-outline" id="cancelBtn">Bekor qilish</button>
+            </div>
+        </form>
+
+        <div id="list"></div>
+        <p class="empty-text hidden" id="empty">Bu fan va tilda savollar yo'q</p>
+    </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/admin-layout.js"></script>
+<script src="js/admin-questions.js"></script>
+</body>
+</html>

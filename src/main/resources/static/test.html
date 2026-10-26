@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body>
+<div class="test-page">
+
+    <div class="test-top">
+        <span class="lang-chip" id="langChip"></span>
+        <span class="timer" id="timer">--:--:--</span>
+    </div>
+
+    <div class="error-text" id="error"></div>
+
+    <div class="q-nav" id="nav"></div>
+
+    <div id="questionBox"></div>
+
+    <div class="test-actions">
+        <button type="button" class="btn btn-outline" id="prevBtn" data-i18n="prev">‹ Oldingisi</button>
+        <button type="button" class="btn btn-primary" id="nextBtn" data-i18n="next">Keyingisi ›</button>
+    </div>
+
+    <div class="finish-wrap">
+        <button type="button" class="btn btn-danger" id="finishBtn" data-i18n="finishTest">Testni yakunlash</button>
+    </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/test.js"></script>
+</body>
+</html>

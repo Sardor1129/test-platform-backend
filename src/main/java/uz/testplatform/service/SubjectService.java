@@ -53,6 +53,7 @@ public class SubjectService {
                 .nameEn(request.nameEn())
                 .durationMinutes(request.durationMinutes())
                 .questionCount(request.questionCount())
+                .passPercent(request.passPercent())
                 .build();
         return toAdminResponse(subjectRepository.save(subject));
     }
@@ -67,6 +68,9 @@ public class SubjectService {
         subject.setNameEn(request.nameEn());
         subject.setDurationMinutes(request.durationMinutes());
         subject.setQuestionCount(request.questionCount());
+        subject.setPassPercent(request.passPercent());
+
+
 
         return toAdminResponse(subjectRepository.save(subject));
     }
@@ -100,6 +104,6 @@ public class SubjectService {
     private AdminSubjectResponse toAdminResponse(Subject s) {
         return new AdminSubjectResponse(
                 s.getId(), s.getNameUz(), s.getNameRu(), s.getNameEn(),
-                s.getDurationMinutes(), s.getQuestionCount());
+                s.getDurationMinutes(), s.getQuestionCount(), s.getPassPercent());
     }
 }

@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotNull;
 
 public record SaveAnswerRequest(
         @NotNull(message = "Savol ko'rsatilmagan") Long questionId,
-        Long optionId
+        @NotNull(message = "Variant tanlanmagan") Long optionId
 ) {}

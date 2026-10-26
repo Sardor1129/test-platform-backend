@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="loginTitle">Tizimga kirish</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body>
+<div class="auth-page">
+    <div class="auth-left">
+        <img src="img/auth-illustration.png" alt="">
+    </div>
+
+    <div class="auth-right">
+        <div class="auth-top">
+            <div class="lang-tabs" id="langTabs"></div>
+            <span data-i18n="noAccount">Hali akkauntingiz yo'qmi?</span>
+            <a href="register.html" class="btn btn-primary btn-small" data-i18n="register">Ro'yxatdan o'tish</a>
+        </div>
+
+        <div class="auth-form-wrap">
+            <form class="auth-form" id="loginForm">
+                <h1 data-i18n="loginTitle">Tizimga kirish</h1>
+
+                <div class="field">
+                    <label for="login" data-i18n="login">Login</label>
+                    <input type="text" id="login" autocomplete="username">
+                </div>
+
+                <div class="field">
+                    <label for="password" data-i18n="password">Parol</label>
+                    <div class="password-wrap">
+                        <input type="password" id="password" autocomplete="current-password">
+                        <button type="button" class="eye" id="togglePassword">
+                            <svg class="icon-on" viewBox="0 0 24 24">
+                                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="icon-off" viewBox="0 0 24 24">
+                                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                                <line x1="3" y1="3" x2="21" y2="21"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row-right">
+                    <a href="forgot.html" class="link" data-i18n="forgotLink">Parolni unutdingizmi?</a>
+                </div>
+
+                <div class="error-text" id="error"></div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="submitBtn" data-i18n="signIn">Kirish</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

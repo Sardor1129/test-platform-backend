@@ -21,16 +21,8 @@ public class User {
     @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
-    private String lastName;
-
-    private String middleName;
-
     @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false, unique = true)
-    private String phone;
 
     @Column(nullable = false, unique = true)
     private String login;

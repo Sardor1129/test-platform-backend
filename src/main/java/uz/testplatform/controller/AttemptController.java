@@ -33,11 +33,10 @@ public class AttemptController {
         return attemptService.getOne(authentication.getName(), id);
     }
     @PutMapping("/{id}/answers")
-    public ResponseEntity<Map<String, String>> saveAnswer(@PathVariable Long id,
-                                                          @Valid @RequestBody SaveAnswerRequest request,
-                                                          Authentication authentication) {
-        attemptService.saveAnswer(authentication.getName(), id, request);
-        return ResponseEntity.ok(Map.of("message", "Javob saqlandi"));
+    public AnswerFeedbackResponse saveAnswer(@PathVariable Long id,
+                                             @Valid @RequestBody SaveAnswerRequest request,
+                                             Authentication authentication) {
+        return attemptService.saveAnswer(authentication.getName(), id, request);
     }
 
     @PostMapping("/{id}/finish")

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="resultTitle">Natija</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body>
+<div class="result-page">
+    <div class="error-text" id="error"></div>
+
+    <div id="resultBox" class="hidden">
+        <div class="result-head" id="head">
+            <div class="badge" id="badge"></div>
+            <div>
+                <div class="percent" id="percent"></div>
+                <div class="status" id="status"></div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="label" data-i18n="totalQ">Umumiy savollar soni</div>
+                <div class="value" id="total"></div>
+            </div>
+            <div class="stat good">
+                <div class="label" data-i18n="correctQ">To'g'ri javoblar soni</div>
+                <div class="value" id="correct"></div>
+            </div>
+            <div class="stat bad">
+                <div class="label" data-i18n="wrongQ">Noto'g'ri javoblar soni</div>
+                <div class="value" id="wrong"></div>
+            </div>
+        </div>
+
+        <div class="result-actions">
+            <a class="btn btn-outline" id="reviewLink" href="#" data-i18n="viewAnswers">Javoblarni ko'rish</a>
+            <button type="button" class="btn btn-primary" id="mainBtn"></button>
+        </div>
+        <div class="result-actions" style="margin-top:16px;">
+            <a class="btn btn-outline" href="tests.html" data-i18n="backHome">Asosiy sahifaga qaytish</a>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/result.js"></script>
+</body>
+</html>

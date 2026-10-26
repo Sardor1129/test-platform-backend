@@ -10,16 +10,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PendingRegistrationStore {
     private final Map <String, RegisterRequest> pending = new ConcurrentHashMap<>();
 
-    public void put(String phone, RegisterRequest request){
-        pending.put(phone, request);
+    public void put(String email, RegisterRequest request){
+        pending.put(email, request);
     }
 
-    public RegisterRequest get(String phone){
-        return pending.get(phone);
+    public RegisterRequest get(String email){
+        return pending.get(email);
     }
 
-    public void remove(String phone){
-        pending.remove(phone);
+    public void remove(String email){
+        pending.remove(email);
     }
 
 }

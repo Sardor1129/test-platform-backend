@@ -69,8 +69,7 @@ public class CertificateService {
             doc.add(centered("SERTIFIKAT", title, 40));
             doc.add(centered("Ushbu sertifikat quyidagi shaxsga beriladi", normal, 20));
 
-            String fullName = user.getLastName() + " " + user.getFirstName()
-                    + (user.getMiddleName() == null ? "" : " " + user.getMiddleName());
+            String fullName = user.getFirstName();
             doc.add(centered(fullName, name, 20));
 
             String subject = switch (attempt.getLanguage()) {

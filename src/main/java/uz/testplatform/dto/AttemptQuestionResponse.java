@@ -8,5 +8,6 @@ public record AttemptQuestionResponse(
         String text,
         String imageUrl,
         List<AttemptOptionResponse> options,
-        Long selectedOptionId
+        Long selectedOptionId,
+        Long correctOptionId
 ) {}

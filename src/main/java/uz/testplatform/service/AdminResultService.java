@@ -24,10 +24,9 @@ public class AdminResultService {
                 .filter(a -> passed == null || passed.equals(a.getPassed()))
                 .map(a -> {
                     User u = a.getUser();
-                    String fullName = u.getLastName() + " " + u.getFirstName()
-                            + (u.getMiddleName() == null ? "" : " " + u.getMiddleName());
+                    String fullName = u.getFirstName();
                     return new AdminResultResponse(
-                            a.getId(), fullName, u.getPhone(),
+                            a.getId(), fullName, u.getEmail(),
                             a.getSubject().getNameUz(), a.getLanguage(),
                             a.getAttemptType().name(),
                             a.getCorrectCount(), a.getTotalQuestions(),

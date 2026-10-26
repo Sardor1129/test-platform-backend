@@ -1,7 +1,6 @@
 package uz.testplatform.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,9 +11,7 @@ import uz.testplatform.repository.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +25,6 @@ public class AttemptService {
     private final AttemptAnswerRepository answerRepository;
     private final CertificateRepository certificateRepository;
 
-    @Value("${app.test.pass-percent}")
-    private double passPercent;
 
     // ---------- TESTNI BOSHLASH ----------
 
@@ -109,7 +104,7 @@ public class AttemptService {
     // ---------- JAVOBNI SAQLASH ----------
 
     @Transactional
-    public void saveAnswer(String login, Long attemptId, SaveAnswerRequest request) {
+    public AnswerFeedbackResponse saveAnswer(String login, Long attemptId, SaveAnswerRequest request) {
         TestAttempt attempt = findOwnAttempt(login, attemptId);
 
         if (attempt.getStatus() == AttemptStatus.FINISHED) {
@@ -123,17 +118,23 @@ public class AttemptService {
                 .findByAttemptIdAndQuestionId(attemptId, request.questionId())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Bu savol testda yo'q"));
 
-        if (request.optionId() == null) {
-            answer.setSelectedOption(null);
-        } else {
-            AnswerOption option = optionRepository.findById(request.optionId())
-                    .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Variant topilmadi"));
-            if (!option.getQuestion().getId().equals(request.questionId())) {
-                throw new ApiException(HttpStatus.BAD_REQUEST, "Variant bu savolga tegishli emas");
-            }
-            answer.setSelectedOption(option);
+        // Javob qulflanadi: bir marta belgilangach o'zgartirib bo'lmaydi
+        if (answer.getSelectedOption() != null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST,
+                    "Bu savolga javob berilgan, o'zgartirib bo'lmaydi");
         }
+
+        AnswerOption option = optionRepository.findById(request.optionId())
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Variant topilmadi"));
+        if (!option.getQuestion().getId().equals(request.questionId())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Variant bu savolga tegishli emas");
+        }
+
+        answer.setSelectedOption(option);
+        answer.setCorrect(option.isCorrect());
         answerRepository.save(answer);
+
+        return new AnswerFeedbackResponse(option.isCorrect(), correctOptionId(answer.getQuestion()));
     }
 
     // ---------- YAKUNLASH ----------
@@ -175,14 +176,16 @@ public class AttemptService {
         List<AttemptQuestionResponse> questions = a.getAnswers().stream()
                 .map(aa -> {
                     Question q = aa.getQuestion();
-                    List<AttemptOptionResponse> options = q.getOptions().stream()
+                    List<AttemptOptionResponse> options = shuffledOptions(a.getId(), q).stream()
                             .map(o -> new AttemptOptionResponse(o.getId(), o.getLabel(), o.getText()))
                             .toList();
                     Long selectedId = aa.getSelectedOption() == null
                             ? null
                             : aa.getSelectedOption().getId();
+                    Long correctId = selectedId == null ? null : correctOptionId(q);
                     return new AttemptQuestionResponse(
-                            aa.getOrderNumber(), q.getId(), q.getText(), q.getImageUrl(), options, selectedId);
+                            aa.getOrderNumber(), q.getId(), q.getText(), q.getImageUrl(),
+                            options, selectedId, correctId);
                 })
                 .toList();
 
@@ -224,7 +227,7 @@ public class AttemptService {
 
         int total = attempt.getAnswers().size();
         double percent = total == 0 ? 0 : Math.round(correct * 10000.0 / total) / 100.0;
-        boolean passed = percent >= passPercent;
+        boolean passed = percent >= attempt.getSubject().getPassPercent();
 
         attempt.setTotalQuestions(total);
         attempt.setCorrectCount(correct);
@@ -244,6 +247,14 @@ public class AttemptService {
         }
     }
 
+    // Variantlar tartibi: bir urinish ichida doim bir xil, urinishlar orasida har xil
+    private List<AnswerOption> shuffledOptions(Long attemptId, Question q) {
+        List<AnswerOption> list = new ArrayList<>(q.getOptions());
+        list.sort(Comparator.comparing(AnswerOption::getId));
+        Collections.shuffle(list, new Random(attemptId * 1_000_003L + q.getId()));
+        return list;
+    }
+
     private AttemptResultResponse toResult(TestAttempt a) {
         int total = a.getTotalQuestions();
         int correct = a.getCorrectCount();
@@ -251,6 +262,14 @@ public class AttemptService {
                 a.getId(), total, correct, total - correct, a.getPercent(),
                 Boolean.TRUE.equals(a.getPassed()),
                 certificateRepository.existsByAttemptId(a.getId()));
+    }
+
+    private Long correctOptionId(Question q) {
+        return q.getOptions().stream()
+                .filter(AnswerOption::isCorrect)
+                .map(AnswerOption::getId)
+                .findFirst()
+                .orElse(null);
     }
 
     // ---------- MENING NATIJALARIM ----------
@@ -318,7 +337,7 @@ public class AttemptService {
 
     // Variantlarni ko'rsatish tartibi
     private List<AnswerOption> reviewOptions(AttemptAnswer aa) {
-        return aa.getQuestion().getOptions();
+        return shuffledOptions(aa.getAttempt().getId(), aa.getQuestion());
     }
 
 

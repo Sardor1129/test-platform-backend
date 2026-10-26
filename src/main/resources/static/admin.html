@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natijalar</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="content">
+        <h1 class="page-title">Foydalanuvchilar natijalari</h1>
+
+        <div class="toolbar">
+            <div class="field">
+                <label for="subjectFilter">Fan</label>
+                <select id="subjectFilter">
+                    <option value="">Barchasi</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="passedFilter">Holat</label>
+                <select id="passedFilter">
+                    <option value="">Barchasi</option>
+                    <option value="true">Topshirgan</option>
+                    <option value="false">Topshirmagan</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="error-text" id="error"></div>
+
+        <div class="table-wrap">
+            <table class="results-table">
+                <thead>
+                <tr>
+                    <th>F.I.O.</th>
+                    <th>Telefon</th>
+                    <th>Fan</th>
+                    <th>Til</th>
+                    <th>Turi</th>
+                    <th>To'g'ri</th>
+                    <th>Natija</th>
+                    <th>Sana</th>
+                </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+            </table>
+        </div>
+        <p class="empty-text hidden" id="empty">Natijalar topilmadi</p>
+    </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/admin-layout.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
