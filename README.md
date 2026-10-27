@@ -1,8 +1,8 @@
-# Test platformasi: Backend
+# Test platformasi
 
 Foydalanuvchilar ro'yxatdan o'tib, tizimga kirib, fanlar bo'yicha onlayn test topshiradigan platformaning server qismi (REST API).
 
-Frontend: [test-platform-frontend](https://github.com/Sardor1129/test-platform-frontend)
+Frontend (HTML, CSS, JavaScript) shu repo ichida, `src/main/resources/static/` papkasida turadi, alohida repo kerak emas.
 
 ## Imkoniyatlar
 
@@ -28,7 +28,7 @@ Frontend: [test-platform-frontend](https://github.com/Sardor1129/test-platform-f
 ## Texnologiyalar
 
 - Java 17
-- Spring Boot 3 (Web, Data JPA, Security, Validation, Mail)
+- Spring Boot 4 (Web, Data JPA, Security, Validation, Mail)
 - PostgreSQL
 - JWT (jjwt)
 - OpenPDF (sertifikat)
@@ -105,7 +105,7 @@ IntelliJ IDEA'da: **Run → Edit Configurations → Environment variables** ga `
 mvn spring-boot:run
 ```
 
-yoki IntelliJ IDEA'da `BackendApplication` ni Run qiling. Server `http://localhost:8080` da ishlaydi. Jadvallar birinchi ishga tushirishda avtomatik yaratiladi, admin foydalanuvchi ham o'zi yaratiladi.
+yoki IntelliJ IDEA'da `TestplatformApplication` ni Run qiling. Server `http://localhost:8080` da ishlaydi. Jadvallar birinchi ishga tushirishda avtomatik yaratiladi, admin foydalanuvchi ham o'zi yaratiladi.
 
 ## Email orqali kodlar
 
@@ -142,9 +142,23 @@ Eslatma: Gmail oddiy hisobdan kuniga taxminan 500 ta xat yuborishga ruxsat berad
 
 `/api/auth/**` ochiq, `/api/admin/**` faqat ADMIN roli uchun, qolganlari tizimga kirgan foydalanuvchi uchun. So'rovlarda `Authorization: Bearer <token>` sarlavhasi kerak.
 
-## Frontend bilan birga ishlatish
+## Frontend
 
-Frontend fayllarini (HTML, CSS, JS, rasmlar) `src/main/resources/static/` papkasiga ko'chirsangiz, backend saytni ham o'zi beradi: `http://localhost:8080/index.html`. Bunda `js/api.js` dagi `API_URL` bo'sh (`''`) bo'lishi kerak, so'rovlar o'sha manzilning o'ziga ketadi.
+Frontend `src/main/resources/static/` papkasida, backend uni o'zi beradi. Backend ishga tushgach saytni oching:
+
+```
+http://localhost:8080/index.html
+```
+
+`static/js/api.js` ichida `const API_URL = '';` bo'lishi kerak: so'rovlar sahifa ochilgan manzilning o'ziga ketadi (alohida server va CORS sozlamasi kerak emas).
+
+> IntelliJ'dagi "brauzerda ochish" ikonkasi sahifani boshqa portda (`63342`) ochadi, u yerda API ishlamaydi va `Unexpected token '<'` xatosi chiqadi. Sahifani faqat `localhost:8080` manzilidan oching.
+
+**Sahifalar.** Foydalanuvchi: `index.html` (kirish), `register.html` (email kodi bilan ro'yxatdan o'tish), `forgot.html` (parol tiklash), `tests.html`, `test.html`, `result.html`, `review.html`, `results.html`, `profile.html`. Admin: `admin.html` (natijalar), `admin-subjects.html`, `admin-questions.html`.
+
+**Imkoniyatlar.** Uch tilli interfeys (O'zbek, Русский, English; admin sahifalari o'zbekcha). Yorug'/qorong'u rejim (tepa o'ngdagi tugma, tanlov brauzerda saqlanadi). Javob belgilangach test o'zi keyingi savolga o'tadi, hamma savolga javob berilganda esa avtomatik yakunlanadi. Variantlar harflarsiz va aralashtirilgan tartibda chiqadi.
+
+**Tuzilma.** Ranglar `css/style.css` boshidagi `:root` va `:root[data-theme="dark"]` bloklarida. `js/api.js` backend bilan aloqa, `js/i18n.js` tarjimalar, `js/theme.js` rejim tugmasi, `js/layout.js` va `js/admin-layout.js` menyular, qolgan har sahifaning o'z `.js` fayli bor.
 
 Ochiq sahifalar (`/`, `*.html`, `/css`, `/js`, `/img`, `/uploads`) `SecurityConfig` da hamma uchun ruxsat etilgan.
 
@@ -170,7 +184,7 @@ docker run -p 8080:8080 --env-file .env test-platform
 ## Loyiha tuzilmasi
 
 ```
-uz.testplatform.backend
+uz.testplatform
 ├── config        xavfsizlik, JWT, sozlamalar
 ├── entity        bazadagi jadvallar
 ├── repository    bazaga so'rovlar
