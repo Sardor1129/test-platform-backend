@@ -48,6 +48,4 @@ app:
   upload-dir: uploads
   mail:
       enabled: true
-      from: ${MAIL_FROM}
-      from-name: Test platforma
-      brevo-api-key: ${BREVO_API_KEY}
+      from: ${MAIL_USERNAME}

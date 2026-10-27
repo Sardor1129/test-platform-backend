@@ -54,6 +54,8 @@ CREATE DATABASE test_platform;
 ```yaml
 spring:
   datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   mail:
     host: smtp.gmail.com
@@ -81,13 +83,15 @@ Muhit o'zgaruvchilari:
 
 | O'zgaruvchi | Ma'nosi |
 |---|---|
+| `DB_URL` | Baza manzili, mahalliy bazada: `jdbc:postgresql://localhost:5432/test_platform` |
+| `DB_USERNAME` | PostgreSQL foydalanuvchisi (odatda `postgres`) |
 | `DB_PASSWORD` | PostgreSQL paroli |
 | `JWT_SECRET` | Kamida 32 belgili tasodifiy maxfiy kalit |
 | `ADMIN_PASSWORD` | Admin paroli (kuchli parol qo'ying) |
 | `MAIL_USERNAME` | Xat yuboriladigan Gmail manzili |
 | `MAIL_PASSWORD` | Gmail **ilova paroli** (16 belgi) |
 
-IntelliJ IDEA'da: **Run → Edit Configurations → Environment variables** ga `DB_PASSWORD=...;JWT_SECRET=...;ADMIN_PASSWORD=...;MAIL_USERNAME=...;MAIL_PASSWORD=...` ko'rinishida yozing (`;` bilan ajratiladi).
+IntelliJ IDEA'da: **Run → Edit Configurations → Environment variables** ga `DB_URL=...;DB_USERNAME=...;DB_PASSWORD=...;JWT_SECRET=...;ADMIN_PASSWORD=...;MAIL_USERNAME=...;MAIL_PASSWORD=...` ko'rinishida yozing (`;` bilan ajratiladi).
 
 `application.yml` git'ga yuklanmaydi (`.gitignore` da), parollar repoga tushmaydi.
 
@@ -153,6 +157,15 @@ cloudflared tunnel --url http://localhost:8080
 ```
 
 Terminalda `https://...trycloudflare.com` manzili chiqadi. Kompyuter va backend ishlab turgan vaqtdagina sayt ochiq, tunnel qayta yoqilganda manzil o'zgaradi. Internetga chiqarishdan oldin parollar va `JWT_SECRET` kuchli ekaniga ishonch hosil qiling. Doimiy ishlashi uchun VPS yoki hosting kerak.
+
+## Docker
+
+Loyiha ildizida `Dockerfile` bor: Maven bilan yig'ib, Java 17 muhitida ishga tushiradi. Port `PORT` muhit o'zgaruvchisidan olinadi (bo'lmasa `8080`). Konteynerda ham yuqoridagi muhit o'zgaruvchilari kerak bo'ladi.
+
+```
+docker build -t test-platform .
+docker run -p 8080:8080 --env-file .env test-platform
+```
 
 ## Loyiha tuzilmasi
 
