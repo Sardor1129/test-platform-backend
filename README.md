@@ -10,6 +10,7 @@ Frontend (HTML, CSS, JavaScript) shu repo ichida, `src/main/resources/static/` p
 - Email orqali ro'yxatdan o'tish: ism, email, login va parol kiritiladi, tasdiqlash kodi emailga yuboriladi
 - Parolni tiklash: kod emailga yuboriladi
 - JWT orqali tizimga kirish
+- Testlarni kategoriya bo'yicha saralash (ochiladigan ro'yxat orqali)
 - Fan va til (O'zbek / Русский / English) tanlab test topshirish
 - Savollar har safar tasodifiy tanlanadi, 1, 2, 3... tartibida raqamlanadi, variantlar tartibi ham har urinishda aralashadi
 - Javob belgilanishi bilan to'g'ri yoki noto'g'riligi ko'rsatiladi va javob qulflanadi (o'zgartirib bo'lmaydi)
@@ -21,6 +22,8 @@ Frontend (HTML, CSS, JavaScript) shu repo ichida, `src/main/resources/static/` p
 - Profilni tahrirlash (ism, login) va rasm yuklash
 
 **Admin**
+- Kategoriya qo'shish, o'zgartirish, o'chirish (nomi uch tilda). Ichida test bor kategoriyani o'chirib bo'lmaydi
+- Har bir fanni (testni) kategoriyaga biriktirish (ixtiyoriy, biriktirilmagan testlar "Boshqa" guruhida chiqadi)
 - Fan qo'shish, o'zgartirish, o'chirish: test vaqti, savollar soni va **o'tish foizi** har fan uchun alohida belgilanadi
 - Savol qo'shish, o'zgartirish, o'chirish (4 variant, bittasi to'g'ri)
 - Barcha foydalanuvchilar natijalarini ko'rish va filtrlash
@@ -49,7 +52,7 @@ CREATE DATABASE test_platform;
 
 ### 3. Sozlamalar
 
-`src/main/resources/application-example.yml` faylidan nusxa olib, nomini `application.yml` qiling. Maxfiy qiymatlar faylga yozilmaydi, ular **muhit o'zgaruvchilaridan** o'qiladi:
+Sozlamalar `src/main/resources/application.yml` da (shablon: `application-example.yml`). Maxfiy qiymatlar faylga yozilmaydi, ular **muhit o'zgaruvchilaridan** o'qiladi:
 
 ```yaml
 spring:
@@ -93,7 +96,7 @@ Muhit o'zgaruvchilari:
 
 IntelliJ IDEA'da: **Run → Edit Configurations → Environment variables** ga `DB_URL=...;DB_USERNAME=...;DB_PASSWORD=...;JWT_SECRET=...;ADMIN_PASSWORD=...;MAIL_USERNAME=...;MAIL_PASSWORD=...` ko'rinishida yozing (`;` bilan ajratiladi).
 
-`application.yml` git'ga yuklanmaydi (`.gitignore` da), parollar repoga tushmaydi.
+Fayl repoda turadi, lekin unda faqat `${...}` o'rinbosarlari bor. Haqiqiy parollarni hech qachon faylga yozmang.
 
 ### 4. Shrift (sertifikat uchun)
 
@@ -134,11 +137,12 @@ Eslatma: Gmail oddiy hisobdan kuniga taxminan 500 ta xat yuborishga ruxsat berad
 | Qism | Endpointlar |
 |---|---|
 | Auth | `POST /api/auth/login`, `/register/send-code`, `/register/resend-code`, `/register/confirm`, `/password/send-code`, `/password/verify-code`, `/password/reset` |
-| Fanlar | `GET /api/subjects?lang=uz` |
+| Fanlar | `GET /api/subjects?lang=uz` (har bir fanda `categoryId` bor) |
+| Kategoriyalar | `GET /api/categories?lang=uz` |
 | Test | `POST /api/attempts`, `GET /api/attempts/{id}`, `PUT /api/attempts/{id}/answers`, `POST /api/attempts/{id}/finish`, `GET /api/attempts/{id}/result` |
 | Natijalar | `GET /api/attempts`, `GET /api/attempts/{id}/review`, `GET /api/attempts/{id}/certificate` |
 | Profil | `GET /api/profile`, `PUT /api/profile`, `POST /api/profile/avatar` |
-| Admin | `/api/admin/subjects`, `/api/admin/questions`, `GET /api/admin/results` |
+| Admin | `/api/admin/categories`, `/api/admin/subjects`, `/api/admin/questions`, `GET /api/admin/results` |
 
 `/api/auth/**` ochiq, `/api/admin/**` faqat ADMIN roli uchun, qolganlari tizimga kirgan foydalanuvchi uchun. So'rovlarda `Authorization: Bearer <token>` sarlavhasi kerak.
 
@@ -154,7 +158,7 @@ http://localhost:8080/index.html
 
 > IntelliJ'dagi "brauzerda ochish" ikonkasi sahifani boshqa portda (`63342`) ochadi, u yerda API ishlamaydi va `Unexpected token '<'` xatosi chiqadi. Sahifani faqat `localhost:8080` manzilidan oching.
 
-**Sahifalar.** Foydalanuvchi: `index.html` (kirish), `register.html` (email kodi bilan ro'yxatdan o'tish), `forgot.html` (parol tiklash), `tests.html`, `test.html`, `result.html`, `review.html`, `results.html`, `profile.html`. Admin: `admin.html` (natijalar), `admin-subjects.html`, `admin-questions.html`.
+**Sahifalar.** Foydalanuvchi: `index.html` (kirish), `register.html` (email kodi bilan ro'yxatdan o'tish), `forgot.html` (parol tiklash), `tests.html`, `test.html`, `result.html`, `review.html`, `results.html`, `profile.html`. Admin: `admin.html` (natijalar), `admin-categories.html`, `admin-subjects.html`, `admin-questions.html`.
 
 **Imkoniyatlar.** Uch tilli interfeys (O'zbek, Русский, English; admin sahifalari o'zbekcha). Yorug'/qorong'u rejim (tepa o'ngdagi tugma, tanlov brauzerda saqlanadi). Javob belgilangach test o'zi keyingi savolga o'tadi, hamma savolga javob berilganda esa avtomatik yakunlanadi. Variantlar harflarsiz va aralashtirilgan tartibda chiqadi.
 
@@ -201,4 +205,6 @@ uz.testplatform
 - Javoblarni ko'rish faqat test yakunlangandan keyin ishlaydi.
 - Sertifikat faqat fan uchun belgilangan o'tish foizidan yuqori natijada beriladi.
 - Variantlar tartibi urinish raqamidan hisoblanadi: bir urinishda doim bir xil, boshqa urinishda boshqacha.
+- Kategoriya ixtiyoriy: fan kategoriyasiz ham bo'ladi. Ichida fan bor kategoriya o'chirilmaydi, avval fanlar boshqa kategoriyaga o'tkaziladi.
+- Foydalanuvchi sahifasida faqat ichida test bor kategoriyalar ko'rsatiladi.
 - Testlarda ishlatilgan savol yoki fan o'chirilmaydi, natijalar saqlanib qoladi.

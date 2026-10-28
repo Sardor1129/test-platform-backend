@@ -7,5 +7,7 @@ public record AdminSubjectResponse(
         String nameEn,
         Integer durationMinutes,
         Integer questionCount,
-        Integer passPercent
+        Integer passPercent,
+        Long categoryId,
+        String categoryName
 ) {}

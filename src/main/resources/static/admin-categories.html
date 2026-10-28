@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kategoriyalar</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="content">
+        <h1 class="page-title">Kategoriyalar</h1>
+
+        <form class="panel" id="categoryForm">
+            <h3 id="formTitle">Yangi kategoriya qo'shish</h3>
+            <div class="profile-grid">
+                <div class="field">
+                    <label for="nameUz">Nomi (O'zbek)</label>
+                    <input type="text" id="nameUz">
+                </div>
+                <div class="field">
+                    <label for="nameRu">Nomi (Русский)</label>
+                    <input type="text" id="nameRu">
+                </div>
+                <div class="field">
+                    <label for="nameEn">Nomi (English)</label>
+                    <input type="text" id="nameEn">
+                </div>
+            </div>
+
+            <div class="error-text" id="error"></div>
+            <div class="success-text" id="success"></div>
+
+            <div class="profile-actions">
+                <button type="submit" class="btn btn-primary" id="saveBtn">Saqlash</button>
+                <button type="button" class="btn btn-outline hidden" id="cancelBtn">Bekor qilish</button>
+            </div>
+        </form>
+
+        <div class="table-wrap">
+            <table class="results-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nomi (uz)</th>
+                    <th>Nomi (ru)</th>
+                    <th>Nomi (en)</th>
+                    <th>Testlar soni</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/admin-layout.js"></script>
+<script src="js/admin-categories.js"></script>
+</body>
+</html>

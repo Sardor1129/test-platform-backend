@@ -33,4 +33,8 @@ public class Subject {
 
     @Column(nullable = false, columnDefinition = "integer default 60")
     private Integer passPercent;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 }

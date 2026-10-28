@@ -5,10 +5,12 @@ const successBox = document.getElementById('success');
 const saveBtn = document.getElementById('saveBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const formTitle = document.getElementById('formTitle');
+const categorySelect = document.getElementById('categoryId');
 
 const FIELDS = ['nameUz', 'nameRu', 'nameEn', 'durationMinutes', 'questionCount', 'passPercent'];
 
 let subjects = [];
+let categories = [];
 let editingId = null;
 
 if (requireAdmin()) {
@@ -18,11 +20,31 @@ if (requireAdmin()) {
 
 async function load() {
     try {
+        categories = await api('/api/admin/categories');
         subjects = await api('/api/admin/subjects');
+        fillCategorySelect();
         draw();
     } catch (e) {
         errorBox.textContent = e.message;
     }
+}
+
+function fillCategorySelect() {
+    const current = categorySelect.value;
+    categorySelect.innerHTML = '';
+
+    const none = document.createElement('option');
+    none.value = '';
+    none.textContent = 'Kategoriyasiz';
+    categorySelect.appendChild(none);
+
+    categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.nameUz;
+        categorySelect.appendChild(opt);
+    });
+    categorySelect.value = current;
 }
 
 function cell(text) {
@@ -35,7 +57,8 @@ function draw() {
     rowsBox.innerHTML = '';
     subjects.forEach(s => {
         const tr = document.createElement('tr');
-        tr.append(cell(s.id), cell(s.nameUz), cell(s.durationMinutes + ' daqiqa'),
+        tr.append(cell(s.id), cell(s.nameUz), cell(s.categoryName || '—'),
+            cell(s.durationMinutes + ' daqiqa'),
             cell(s.questionCount), cell(s.passPercent + '%'));
 
         const td = document.createElement('td');
@@ -64,6 +87,7 @@ function draw() {
 function startEdit(s) {
     editingId = s.id;
     FIELDS.forEach(f => { document.getElementById(f).value = s[f]; });
+    categorySelect.value = s.categoryId == null ? '' : s.categoryId;
     formTitle.textContent = 'Fanni tahrirlash (ID: ' + s.id + ')';
     cancelBtn.classList.remove('hidden');
     errorBox.textContent = '';
@@ -94,8 +118,8 @@ form.addEventListener('submit', async (event) => {
         nameEn: document.getElementById('nameEn').value.trim(),
         durationMinutes: Number(document.getElementById('durationMinutes').value) || null,
         questionCount: Number(document.getElementById('questionCount').value) || null,
-        passPercent: Number(document.getElementById('passPercent').value) || null
-
+        passPercent: Number(document.getElementById('passPercent').value) || null,
+        categoryId: categorySelect.value ? Number(categorySelect.value) : null
     };
 
     saveBtn.disabled = true;

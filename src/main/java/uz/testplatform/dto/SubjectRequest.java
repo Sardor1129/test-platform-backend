@@ -15,5 +15,6 @@ public record SubjectRequest(
         @Min(value = 1, message = "Savollar soni kamida 1 bo'lsin") Integer questionCount,
         @NotNull(message = "O'tish foizi kiritilmagan")
         @Min(value = 1, message = "O'tish foizi kamida 1 bo'lsin")
-        @Max(value = 100, message = "O'tish foizi 100 dan oshmasin") Integer passPercent
+        @Max(value = 100, message = "O'tish foizi 100 dan oshmasin") Integer passPercent,
+        Long categoryId
 ) {}

@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.testplatform.dto.AdminSubjectResponse;
 import uz.testplatform.dto.SubjectRequest;
 import uz.testplatform.dto.SubjectResponse;
+import uz.testplatform.entity.Category;
 import uz.testplatform.entity.Subject;
 import uz.testplatform.exception.ApiException;
+import uz.testplatform.repository.CategoryRepository;
 import uz.testplatform.repository.QuestionRepository;
 import uz.testplatform.repository.SubjectRepository;
 import uz.testplatform.repository.TestAttemptRepository;
@@ -20,6 +22,7 @@ import java.util.List;
 public class SubjectService {
 
     private final SubjectRepository subjectRepository;
+    private final CategoryRepository categoryRepository;
     private final QuestionRepository questionRepository;
     private final TestAttemptRepository attemptRepository;
 
@@ -32,7 +35,8 @@ public class SubjectService {
                         s.getId(),
                         nameByLang(s, lang),
                         s.getDurationMinutes(),
-                        s.getQuestionCount()))
+                        s.getQuestionCount(),
+                        s.getCategory() == null ? null : s.getCategory().getId()))
                 .toList();
     }
 
@@ -54,6 +58,7 @@ public class SubjectService {
                 .durationMinutes(request.durationMinutes())
                 .questionCount(request.questionCount())
                 .passPercent(request.passPercent())
+                .category(findCategory(request.categoryId()))
                 .build();
         return toAdminResponse(subjectRepository.save(subject));
     }
@@ -69,8 +74,7 @@ public class SubjectService {
         subject.setDurationMinutes(request.durationMinutes());
         subject.setQuestionCount(request.questionCount());
         subject.setPassPercent(request.passPercent());
-
-
+        subject.setCategory(findCategory(request.categoryId()));
 
         return toAdminResponse(subjectRepository.save(subject));
     }
@@ -93,6 +97,14 @@ public class SubjectService {
 
     // ---------- YORDAMCHI METODLAR ----------
 
+    private Category findCategory(Long categoryId) {
+        if (categoryId == null) {
+            return null;
+        }
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Kategoriya topilmadi"));
+    }
+
     private String nameByLang(Subject s, String lang) {
         return switch (lang) {
             case "ru" -> s.getNameRu();
@@ -102,8 +114,11 @@ public class SubjectService {
     }
 
     private AdminSubjectResponse toAdminResponse(Subject s) {
+        Category c = s.getCategory();
         return new AdminSubjectResponse(
                 s.getId(), s.getNameUz(), s.getNameRu(), s.getNameEn(),
-                s.getDurationMinutes(), s.getQuestionCount(), s.getPassPercent());
+                s.getDurationMinutes(), s.getQuestionCount(), s.getPassPercent(),
+                c == null ? null : c.getId(),
+                c == null ? null : c.getNameUz());
     }
 }

@@ -4,5 +4,6 @@ public record SubjectResponse(
         Long id,
         String name,
         Integer durationMinutes,
-        Integer questionCount
+        Integer questionCount,
+        Long categoryId
 ) {}
